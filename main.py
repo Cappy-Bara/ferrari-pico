@@ -1,8 +1,9 @@
 from peripherals import Sensors, VirtualTemperatureSensor
-from pin_inits import get_real_actuators
+from pin_inits import get_real_actuators, get_real_sensors
 from pin_inits_mocks import get_mocked_actuators, get_mocked_sensors
 from states import StateMachine
 from time import sleep_ms
+import asyncio
 
 ##init
 actuators = get_real_actuators()
@@ -14,12 +15,11 @@ HYSTERESIS = 20
 
 stateMachine = StateMachine(sensors, actuators)
 
-def handle():
-    stateResult = stateMachine.handle(REQUIRED_TEMPERATURE, HYSTERESIS)
-    print(f"CURRENT TEMPERATURE:{stateResult.current_temperature}")
-    print(f"HEATER STATE:{stateResult.top_heater_state}")
-    return
+async def main():
+    while True:
+        stateResult = await stateMachine.handle(REQUIRED_TEMPERATURE, HYSTERESIS)
+        print(f"CURRENT TEMPERATURE:{stateResult.current_temperature}")
+        print(f"HEATER STATE:{stateResult.top_heater_state}")
+        await asyncio.sleep(0.25)
 
-while True:
-    handle()
-    sleep_ms(1)
+asyncio.run(main())

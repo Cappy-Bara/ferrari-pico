@@ -11,8 +11,8 @@ class StateMachine:
 
         self._was_temp_achieved= False
 
-    def handle(self, required_temp:float, hysteresis:float):
-        current_temp = self._sensors.temperature_reader.read_celsius()
+    async def handle(self, required_temp:float, hysteresis:float):
+        current_temp = await self._sensors.temperature_reader.read_celsius()
         self._current_state.handle(self._actuators, current_temp, required_temp, hysteresis)
         return StateResult(current_temp, self._actuators.up_heater.is_working)
         

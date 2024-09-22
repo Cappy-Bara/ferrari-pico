@@ -1,4 +1,5 @@
 import time
+import asyncio
 class MAX6675:
     MEASUREMENT_PERIOD_MS = 220
 
@@ -23,18 +24,18 @@ class MAX6675:
         self._last_read_temp = 0
         self._error = 0
 
-    def _cycle_sck(self):
+    async def _cycle_sck(self):
         self._sck.high()
-        time.sleep_us(1)
+        await asyncio.sleep(0.000001)
         self._sck.low()
-        time.sleep_us(1)
+        await asyncio.sleep(0.000001)
 
-    def refresh(self):
+    async def refresh(self):
         """
         Start a new measurement.
         """
         self._cs.low()
-        time.sleep_us(10)
+        await asyncio.sleep(0.00001)
         self._cs.high()
         self._last_measurement_start = time.ticks_ms()
 
@@ -53,7 +54,7 @@ class MAX6675:
         """
         return self._error
 
-    def read(self):
+    async def read(self):
         """
         Reads last measurement and starts a new one. If new measurement is not ready yet, returns last value.
         Note: The last measurement can be quite old (e.g. since last call to `read`).
@@ -66,23 +67,23 @@ class MAX6675:
             # the conversion process. Forcing the pin down outputs
             # first (dummy) sign bit 15.
             self._cs.low()
-            time.sleep_us(10)
+            await asyncio.sleep(0.00001)
 
             # Read temperature bits 14-3 from MAX6675.
             value = 0
             for i in range(12):
                 # SCK should resemble clock signal and new SO value
                 # is presented at falling edge
-                self._cycle_sck()
+                await self._cycle_sck()
                 value += self._so.value() << (11 - i)
 
             # Read the TC Input pin to check if the input is open
-            self._cycle_sck()
+            await self._cycle_sck()
             self._error = self._so.value()
 
             # Read the last two bits to complete protocol
             for i in range(2):
-                self._cycle_sck()
+                await self._cycle_sck()
 
             # Finish protocol and start new measurement
             self._cs.high()

@@ -1,3 +1,3 @@
 class TemperatureSensor:
-    def read_celsius(self) -> float:
+    async def read_celsius(self) -> float:
         raise NotImplementedError()

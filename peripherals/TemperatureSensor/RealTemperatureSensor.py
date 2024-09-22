@@ -10,5 +10,5 @@ class RealTemperatureSensor(TemperatureSensor):
 
         self.sensor = MAX6675(sck, cs, so)
 
-    def read_celsius(self) -> float:
-        return self.sensor.read()
+    async def read_celsius(self) -> float:
+        return await self.sensor.read()
