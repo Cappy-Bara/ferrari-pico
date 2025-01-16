@@ -6,4 +6,5 @@ def get_mocked_sensors() -> Sensors:
 
 def get_mocked_actuators() -> Actuators:
     up_heater = MockedHeater("UP") 
-    return Actuators(up_heater)
+    down_heater = MockedHeater("DOWN") 
+    return Actuators(up_heater,down_heater)
