@@ -1,5 +1,5 @@
-from peripherals.Actuators import Actuators
-from states import State
+from device.peripherals.Actuators import Actuators
+from device.states.State import State
 
 class SustainState(State):
 

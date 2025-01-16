@@ -1,6 +1,7 @@
-from peripherals.Actuators import Actuators
-from peripherals.Sensors import Sensors
-from states import State, HeatingState
+from device.peripherals.Actuators import Actuators
+from device.peripherals.Sensors import Sensors
+from device.states.HeatingState import HeatingState
+from device.states.State import State
 
 class StateMachine:
     def __init__(self, sensors:Sensors, actuators:Actuators):

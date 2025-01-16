@@ -1,12 +1,12 @@
-from peripherals.Actuators import Actuators
-from states import State
+from device.peripherals.Actuators import Actuators
+from device.states.State import State
+from device.states.SustainState import SustainState
 
 class HeatingState(State):
     def __init__(self, state_machine):
         self._state_machine = state_machine
 
     def handle(self, actuators : Actuators, current_temp: float, required_temp: float, hysteresis: float):
-        from states import SustainState
         actuators.up_heater.start_heating()
 
         if(current_temp >= required_temp):

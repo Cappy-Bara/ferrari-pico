@@ -1,6 +1,6 @@
 from AppContext import AppContext
-from peripherals.pin_inits import get_real_actuators, get_real_sensors
-from states import StateMachine
+from device.states.StateMachine import StateMachine
+from .peripherals.pin_inits import get_real_actuators, get_real_sensors
 import uasyncio as asyncio
 
 context : AppContext = None  # type: ignore

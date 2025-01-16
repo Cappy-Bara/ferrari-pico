@@ -1,5 +1,6 @@
-from peripherals import Heater, TemperatureSensor
 from asyncio import sleep
+from device.peripherals.Heater.Heater import Heater
+from device.peripherals.TemperatureSensor.TemperatureSensor import TemperatureSensor
 
 class VirtualTemperatureSensor(TemperatureSensor):
     def __init__(self,temperature,speed,heater : Heater,delay=0.250):

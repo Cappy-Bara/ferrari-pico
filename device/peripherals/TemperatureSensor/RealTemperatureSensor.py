@@ -1,6 +1,6 @@
+from device.peripherals.TemperatureSensor.TemperatureSensor import TemperatureSensor
 from libs.max6675.max6675 import MAX6675
 from machine import Pin
-from peripherals.TemperatureSensor.TemperatureSensor import TemperatureSensor 
 
 class RealTemperatureSensor(TemperatureSensor):
     def __init__(self, sckPinNumber:int, csPinNumber:int, soPinNumber:int):

@@ -1,5 +1,6 @@
-from peripherals.TemperatureSensor.TemperatureSensor import TemperatureSensor
 from asyncio import sleep
+
+from device.peripherals.TemperatureSensor.TemperatureSensor import TemperatureSensor
 
 class MockedTemperatureSensor(TemperatureSensor):
     def __init__(self, delay=0.250):

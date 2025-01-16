@@ -1,7 +1,7 @@
 import asyncio
-import json
 from AppContext import AppContext
-from device import handle_device
+import json
+from device.device import handle_device
 from server.webserver import run_web_server
 
 class Appsettings:

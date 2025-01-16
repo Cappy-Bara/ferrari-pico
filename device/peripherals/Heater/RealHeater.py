@@ -1,4 +1,4 @@
-from peripherals.Heater.Heater import Heater
+from device.peripherals.Heater.Heater import Heater
 import machine
 
 class RealHeater(Heater):

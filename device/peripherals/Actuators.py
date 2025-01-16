@@ -1,4 +1,4 @@
-from peripherals import Heater
+from device.peripherals.Heater.Heater import Heater
 
 class Actuators:
     def __init__(self, up_heater : Heater, down_heater : Heater):

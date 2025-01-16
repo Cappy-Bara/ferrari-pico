@@ -1,4 +1,9 @@
-from peripherals import Actuators, Sensors, RealHeater, RealTemperatureSensor
+
+from device.peripherals.Actuators import Actuators
+from device.peripherals.Heater.RealHeater import RealHeater
+from device.peripherals.Sensors import Sensors
+from device.peripherals.TemperatureSensor.RealTemperatureSensor import RealTemperatureSensor
+
 
 def get_real_sensors() -> Sensors:
     temperatureSensor = RealTemperatureSensor(2,3,4)
