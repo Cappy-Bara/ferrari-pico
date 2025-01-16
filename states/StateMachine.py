@@ -14,12 +14,14 @@ class StateMachine:
     async def handle(self, required_temp:float, hysteresis:float):
         current_temp = await self._sensors.temperature_reader.read_celsius()
         self._current_state.handle(self._actuators, current_temp, required_temp, hysteresis)
-        return StateResult(current_temp, self._actuators.up_heater.is_working)
+        return StateResult(required_temp, current_temp, self._actuators.up_heater.is_working, self._actuators.down_heater.is_working)
         
     def change_state(self, state:State):
         self._current_state= state
 
 class StateResult:
-    def __init__(self, current_temperature, top_heater_state) -> None:
+    def __init__(self, required_temperature, current_temperature, top_heater_state, down_heater_state) -> None:
         self.current_temperature = current_temperature
+        self.required_temperature = required_temperature
         self.top_heater_state = top_heater_state
+        self.down_heater_state = down_heater_state
