@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FERRARI</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            margin: 20px;
+            background-color: #ffefd5;
+            color: #d2691e;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff8dc;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            border: 5px solid #ff4500;
+        }
+        h1 {
+            color: #ff4500;
+            text-align: center;
+            font-size: 2.5em;
+        }
+        .status {
+            margin: 20px 0;
+            color: #8b4513;
+            font-size: 1.2em;
+        }
+        .status span {
+            font-weight: bold;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #8b4513;
+            font-size: 1.2em;
+        }
+        .form-group input {
+            padding: 10px;
+            width: calc(100% - 24px);
+            border: 2px solid #ff4500;
+            border-radius: 8px;
+            font-size: 1.2em;
+        }
+        .form-group button {
+            padding: 15px 30px;
+            margin-top: 15px;
+            background-color: #ff4500;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+        .form-group button:hover {
+            background-color: #e63900;
+        }
+        .heaters {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+        .heater {
+            flex: 1;
+        }
+        .plug-status.plugged {
+            color: green;
+        }
+        .plug-status.unplugged {
+            color: red;
+        }
+        .oven-status.on {
+            color: green;
+        }
+        .oven-status.off {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>FERRARI</h1>
+        
+        <div class="status">
+            <p>Current Temperature: <span id="currentTemperatureVal">--</span>°C</p>
+        </div>
+
+        <div class="status">
+            <p>Required Temperature: <span id="requiredTemperatureVal">--</span>°C</p>
+        </div>
+        <div class="form-group">
+            <input type="number" id="requiredTemperature" name="requiredTemperature" min="0" max="500">
+            <button onclick="setTemperature()">Set</button>
+        </div>
+
+        <div class="heaters">
+            <div class="heater">
+                <div class="status">
+                    <p>Upper Heater Status: <span id="upperOvenStatus" class="oven-status off">Off</span> <span id="upperPlugStatus" class="plug-status unplugged">Unplugged</span></p>
+                    <button onclick="toggleUpHeater()">Turn Upper Heater Off</button>
+                </div>
+            </div>
+            <div class="heater">
+                <div class="status">
+                    <p>Lower Heater Status: <span id="lowerOvenStatus" class="oven-status off">Off</span> <span id="lowerPlugStatus" class="plug-status unplugged">Unplugged</span></p>
+                    <button onclick="toggleDownHeater()">Turn Lower Heater Off</button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        function setTemperature() {
+            const requiredTemp = document.getElementById('requiredTemperature').value;
+
+            fetch(`/api/temperature/${requiredTemp}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+                updateRequiredTemperature(requiredTemp);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function toggleUpHeater() {
+            const upperPlugStatus = document.getElementById('upperPlugStatus');
+            console.log(upperPlugStatus.textContent)
+            if (upperPlugStatus.textContent === 'Plugged') {
+                turnHeaterOff("up",upperPlugStatus)
+            } else {
+                turnHeaterOn("up",upperPlugStatus)
+            }
+
+            console.log(`Upper heater status: ${upperPlugStatus.textContent}`);
+        }
+
+        function toggleDownHeater() {
+            const lowerPlugStatus = document.getElementById('lowerPlugStatus');
+            if (lowerPlugStatus.textContent === 'Plugged') {
+                turnHeaterOff("down",lowerPlugStatus)
+
+            } else {
+                turnHeaterOn("down",lowerPlugStatus)
+            }
+
+            console.log(`Lower heater status: ${lowerPlugStatus.textContent}`);
+        }
+
+        function turnHeaterOn(id, plugStatus){
+
+            fetch(`api/heater/${id}/True`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+                plugStatus.textContent = 'Plugged';
+                plugStatus.classList.remove('unplugged');
+                plugStatus.classList.add('plugged');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function turnHeaterOff(id, plugStatus){
+
+            fetch(`api/heater/${id}/False`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+                plugStatus.textContent = 'Unplugged';
+                plugStatus.classList.remove('plugged');
+                plugStatus.classList.add('unplugged');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+        }
+
+        function updateCurrentTemperature(temp) {
+            document.getElementById('currentTemperatureVal').textContent = temp;
+        }
+
+        function updateRequiredTemperature(temp) {
+            document.getElementById('requiredTemperatureVal').textContent = temp;
+        }
+
+        updateCurrentTemperature(350);
+        updateRequiredTemperature(500);
+    </script>
+</body>
+</html>

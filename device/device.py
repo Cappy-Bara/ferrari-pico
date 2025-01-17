@@ -22,5 +22,8 @@ async def handle_device(appContext:AppContext):
     # s = StateResult(500, 137, False, False)
 
     while True:
-        stateResult = await stateMachine.handle(REQUIRED_TEMPERATURE, HYSTERESIS)
+        print(f"UP => {context.up_heater_plugged}")
+        print(f"DOWN => {context.down_heater_plugged}")
+        print(f"Temp => {context.required_temperature}")
+        #stateResult = await stateMachine.handle(REQUIRED_TEMPERATURE, HYSTERESIS)
         await asyncio.sleep(0.25)

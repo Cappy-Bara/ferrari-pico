@@ -9,6 +9,8 @@ async def connect_to_network(ssid, pw):
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     wlan.connect(ssid, pw)
+    print(ssid)
+    print(pw)
     while wlan.isconnected() == False:
         print('Waiting for connection...')
         await asyncio.sleep(1)
