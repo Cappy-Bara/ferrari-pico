@@ -130,7 +130,6 @@
             .then(response => response.text())
             .then(data => {
                 console.log(data);
-                updateRequiredTemperature(requiredTemp);
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -210,8 +209,61 @@
             document.getElementById('requiredTemperatureVal').textContent = temp;
         }
 
-        updateCurrentTemperature(350);
-        updateRequiredTemperature(500);
+        function handleSSE() {
+            const eventSource = new EventSource('/api/status');
+
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                
+                const curr_temp = data.current_temperature
+                const req_temp = data.required_temperature
+                const upHeater = data.top_heater_state
+                const downHeater = data.down_heater_state
+
+                if (curr_temp !== undefined) {
+                    updateCurrentTemperature(curr_temp);
+                }
+                if (req_temp !== undefined) {
+                    updateRequiredTemperature(req_temp);
+                }
+                
+                if (upHeater !== undefined) {
+                    const upperOvenStatus = document.getElementById('upperOvenStatus');
+                    if(upHeater){
+                        upperOvenStatus.classList.toggle('on');
+                        upperOvenStatus.classList.remove('off');
+                        upperOvenStatus.textContent = 'On';
+                    }
+                    else{
+                        upperOvenStatus.classList.toggle('off');
+                        upperOvenStatus.classList.remove('on');
+                        upperOvenStatus.textContent = 'Off';
+                    }
+                }
+
+                if (downHeater !== undefined) {
+                    const lowerOvenStatus = document.getElementById('lowerOvenStatus');
+                    if(downHeater){
+                        lowerOvenStatus.classList.toggle('on');
+                        lowerOvenStatus.classList.remove('off');
+                        lowerOvenStatus.textContent = 'On';
+                    }
+                    else{
+                        lowerOvenStatus.classList.toggle('off');
+                        lowerOvenStatus.classList.remove('on');
+                        lowerOvenStatus.textContent = 'Off';
+                    }
+                }
+            };
+
+            eventSource.onerror = function(error) {
+                console.error('SSE error:', error);
+                eventSource.close();
+            };
+        }
+
+        handleSSE();
+
     </script>
 </body>
 </html>

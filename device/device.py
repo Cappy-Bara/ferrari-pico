@@ -26,6 +26,7 @@ async def handle_device(appContext:AppContext, beginState : StateResult):
     stateMachine = StateMachine(sensors, actuators)
 
     while True:
-        currentState = await stateMachine.handle(context.required_temperature, HYSTERESIS)
-        print(json.dumps(currentState.__dict__))
+        result = await stateMachine.handle(context.required_temperature, HYSTERESIS)
+        currentState.update(result) 
+
         await asyncio.sleep(0.25)

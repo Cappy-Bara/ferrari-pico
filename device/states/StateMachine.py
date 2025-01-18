@@ -26,3 +26,9 @@ class StateResult:
         self.required_temperature = required_temperature
         self.top_heater_state = top_heater_state
         self.down_heater_state = down_heater_state
+
+    def update(self, state):
+        self.current_temperature = state.current_temperature
+        self.required_temperature = state.required_temperature
+        self.top_heater_state = state.top_heater_state
+        self.down_heater_state = state.down_heater_state
