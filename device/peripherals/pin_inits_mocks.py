@@ -1,4 +1,9 @@
-from peripherals import Actuators, Sensors, MockedHeater, MockedTemperatureSensor
+
+from device.peripherals.Actuators import Actuators
+from device.peripherals.Heater.MockedHeater import MockedHeater
+from device.peripherals.Sensors import Sensors
+from device.peripherals.TemperatureSensor.MockedTemperatureSensor import MockedTemperatureSensor
+
 
 def get_mocked_sensors() -> Sensors:
     temperatureSensor = MockedTemperatureSensor()

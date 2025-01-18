@@ -1,29 +1,31 @@
 from AppContext import AppContext
-from device.states.StateMachine import StateMachine
-from .peripherals.pin_inits import get_real_actuators, get_real_sensors
+from device.peripherals.TemperatureSensor.VirtualTemperatureSensor import VirtualTemperatureSensor
+from device.peripherals.pin_inits_mocks import get_mocked_actuators, get_mocked_sensors
+from device.states.StateMachine import StateMachine, StateResult
+from device.peripherals.pin_inits import get_real_actuators, get_real_sensors
+import json
 import uasyncio as asyncio
 
 context : AppContext = None  # type: ignore
+currentState: StateResult = None # type: ignore
 
-async def handle_device(appContext:AppContext):
-    global context
+async def handle_device(appContext:AppContext, beginState : StateResult):
+    global context, currentState
     context = appContext
+    currentState = beginState
 
-    actuators = get_real_actuators()
-    sensors = get_real_sensors()
+    # actuators = get_real_actuators()
+    # sensors = get_real_sensors()
 
-    REQUIRED_TEMPERATURE = 500
+    actuators = get_mocked_actuators()
+    sensors = get_mocked_sensors()
+    sensors.temperature_reader = VirtualTemperatureSensor(50,1,actuators.up_heater)
+
     HYSTERESIS = 20
 
     stateMachine = StateMachine(sensors, actuators)
 
-    # sensor_i2c = I2C(1, scl=Pin(11), sda=Pin(10), freq=100000)
-    # screen = RealDisplay(sensor_i2c,128,32)
-    # s = StateResult(500, 137, False, False)
-
     while True:
-        print(f"UP => {context.up_heater_plugged}")
-        print(f"DOWN => {context.down_heater_plugged}")
-        print(f"Temp => {context.required_temperature}")
-        #stateResult = await stateMachine.handle(REQUIRED_TEMPERATURE, HYSTERESIS)
+        currentState = await stateMachine.handle(context.required_temperature, HYSTERESIS)
+        print(json.dumps(currentState.__dict__))
         await asyncio.sleep(0.25)

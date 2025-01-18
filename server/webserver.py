@@ -1,4 +1,5 @@
 from AppContext import AppContext
+from device.states.StateMachine import StateResult
 from .endpoints import get_endpoints
 from .home import home
 from libs.microdot.microdot import Microdot
@@ -9,8 +10,6 @@ async def connect_to_network(ssid, pw):
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     wlan.connect(ssid, pw)
-    print(ssid)
-    print(pw)
     while wlan.isconnected() == False:
         print('Waiting for connection...')
         await asyncio.sleep(1)
@@ -18,16 +17,15 @@ async def connect_to_network(ssid, pw):
     print(f'Connected on {ip}')
     return ip
 
-async def run_web_server(appContext : AppContext, serverSettings):
+async def run_web_server(appContext : AppContext, serverSettings, currentState : StateResult):
     ip = await connect_to_network(serverSettings.wlan_ssid, serverSettings.wlan_passwd)
     print(f"Starting web server on {ip}:{serverSettings.port}")
 
-    endpoints = get_endpoints(appContext)
+    endpoints = get_endpoints(appContext, currentState)
     app = Microdot()
 
     app.mount(home,"/")
     app.mount(endpoints,"/api")
 
+    print(f"Server started.")
     await app.start_server(host=ip, port=serverSettings.port)
-
-

@@ -8,8 +8,9 @@ class SustainState(State):
         self._was_heated = was_heated
 
     def handle(self, actuators : Actuators, current_temp: float, required_temp: float, hysteresis: float):
-        from states import HeatingState
         actuators.up_heater.stop_heating()
+
+        from device.states.HeatingState import HeatingState
 
         if(current_temp < required_temp - hysteresis):
             self._state_machine.change_state(HeatingState(self._state_machine))
