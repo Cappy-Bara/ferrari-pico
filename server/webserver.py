@@ -20,6 +20,7 @@ async def connect_to_network(ssid, pw):
 async def run_web_server(appContext : AppContext, serverSettings, currentState : StateResult):
     ip = await connect_to_network(serverSettings.wlan_ssid, serverSettings.wlan_passwd)
     print(f"Starting web server on {ip}:{serverSettings.port}")
+    appContext.ip = ip
 
     endpoints = get_endpoints(appContext, currentState)
     app = Microdot()
