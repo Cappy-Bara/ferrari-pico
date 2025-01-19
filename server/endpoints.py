@@ -20,12 +20,12 @@ async def change_temperature(request, value):
 async def switch_heater_state(request, id):
 
     if(id == "up"):
-        context.up_heater_plugged = not context.up_heater_plugged
-        message = f'Up heater set to : {context.up_heater_plugged}'
+        context.up_heater_plug.reverseState()
+        message = f'Up heater set to : {context.up_heater_plug.isPlugged}'
 
     elif(id == "down"):
-        context.down_heater_plugged = not context.down_heater_plugged
-        message = f'Down heater set to : {context.up_heater_plugged}'
+        context.down_heater_plug.reverseState()
+        message = f'Down heater set to : {context.down_heater_plug.isPlugged}'
     
     print(message)
     return(message)
@@ -36,8 +36,8 @@ async def events(request, sse):
     while(True):
         await asyncio.sleep(1)
         result = currentState.__dict__.copy()
-        result['top_heater_plugged'] = context.up_heater_plugged 
-        result['down_heater_plugged'] = context.down_heater_plugged 
+        result['top_heater_plugged'] = context.up_heater_plug.isPlugged
+        result['down_heater_plugged'] = context.down_heater_plug.isPlugged
         await sse.send(json.dumps(result))
 
 def get_endpoints(appContext : AppContext, state : StateResult):

@@ -9,6 +9,7 @@ class SustainState(State):
 
     def handle(self, actuators : Actuators, current_temp: float, required_temp: float, hysteresis: float):
         actuators.up_heater.stop_heating()
+        actuators.down_heater.stop_heating()
 
         from device.states.HeatingState import HeatingState
 

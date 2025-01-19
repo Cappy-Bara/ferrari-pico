@@ -3,7 +3,6 @@ from device.peripherals.TemperatureSensor.VirtualTemperatureSensor import Virtua
 from device.peripherals.pin_inits_mocks import get_mocked_actuators, get_mocked_sensors
 from device.states.StateMachine import StateMachine, StateResult
 from device.peripherals.pin_inits import get_real_actuators, get_real_sensors
-import json
 import uasyncio as asyncio
 
 context : AppContext = None  # type: ignore
@@ -14,10 +13,10 @@ async def handle_device(appContext:AppContext, beginState : StateResult):
     context = appContext
     currentState = beginState
 
-    # actuators = get_real_actuators()
+    # actuators = get_real_actuators(appContext.up_heater_plug, appContext.down_heater_plug)
     # sensors = get_real_sensors()
 
-    actuators = get_mocked_actuators()
+    actuators = get_mocked_actuators(appContext.up_heater_plug, appContext.down_heater_plug)
     sensors = get_mocked_sensors()
     sensors.temperature_reader = VirtualTemperatureSensor(50,1,actuators.up_heater)
 
@@ -28,5 +27,4 @@ async def handle_device(appContext:AppContext, beginState : StateResult):
     while True:
         result = await stateMachine.handle(context.required_temperature, HYSTERESIS)
         currentState.update(result) 
-
         await asyncio.sleep(0.25)

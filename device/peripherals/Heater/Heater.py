@@ -1,6 +1,9 @@
+from device.peripherals.Heater.Plug import Plug
+
+
 class Heater:
 
-    def __init__(self):
+    def __init__(self, plug : Plug):
         self.is_working = False
 
     def start_heating(self):

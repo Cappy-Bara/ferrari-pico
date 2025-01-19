@@ -1,6 +1,6 @@
 from AppContext import AppContext
 from device.states.StateMachine import StateResult
-from .endpoints import get_endpoints
+from server.endpoints import get_endpoints
 from .home import home
 from libs.microdot.microdot import Microdot
 import network
