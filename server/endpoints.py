@@ -11,24 +11,23 @@ currentState : StateResult = None # type: ignore
 
 @app.post('/temperature/<value>')
 async def change_temperature(request, value):
-    message = "temperature set to: " + value
+    message = "required temperature set to: " + value
     print(message)
     context.required_temperature = int(value)
     return message
 
-@app.post('/heater/<id>/<state>')
-async def ddd(request, id, state):
-    message = "Heater " + id + " set to : " + state
-    print(message)
-    
-    parsed = True if state == "True" else False
-    print(parsed)
+@app.post('/heater/<id>/switch')
+async def switch_heater_state(request, id):
 
     if(id == "up"):
-        context.up_heater_plugged = parsed
-    elif(id == "down"):
-        context.down_heater_plugged = parsed
+        context.up_heater_plugged = not context.up_heater_plugged
+        message = f'Up heater set to : {context.up_heater_plugged}'
 
+    elif(id == "down"):
+        context.down_heater_plugged = not context.down_heater_plugged
+        message = f'Down heater set to : {context.up_heater_plugged}'
+    
+    print(message)
     return(message)
 
 @app.route('/status')

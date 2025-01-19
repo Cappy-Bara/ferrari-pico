@@ -103,14 +103,14 @@
         <div class="heaters">
             <div class="heater">
                 <div class="status">
-                    <p>Upper Heater Status: <span id="upperOvenStatus" class="oven-status off">Off</span> <span id="upperPlugStatus" class="plug-status unplugged">Unplugged</span></p>
-                    <button onclick="toggleUpHeater()">Turn Upper Heater Off</button>
+                    <p>Upper Heater Status: <span id="upHeaterStatus" class="oven-status off">Off</span> <span id="upperPlugStatus" class="plug-status unplugged">Unplugged</span></p>
+                    <button onclick="switchHeaterState(`up`)">Switch state</button>
                 </div>
             </div>
             <div class="heater">
                 <div class="status">
-                    <p>Lower Heater Status: <span id="lowerOvenStatus" class="oven-status off">Off</span> <span id="lowerPlugStatus" class="plug-status unplugged">Unplugged</span></p>
-                    <button onclick="toggleDownHeater()">Turn Lower Heater Off</button>
+                    <p>Lower Heater Status: <span id="downHeaterStatus" class="oven-status off">Off</span> <span id="lowerPlugStatus" class="plug-status unplugged">Unplugged</span></p>
+                    <button onclick="switchHeaterState(`down`)">Switch state</button>
                 </div>
             </div>
         </div>
@@ -120,7 +120,6 @@
     <script>
         function setTemperature() {
             const requiredTemp = document.getElementById('requiredTemperature').value;
-
             fetch(`/api/temperature/${requiredTemp}`, {
                 method: 'POST',
                 headers: {
@@ -128,76 +127,68 @@
                 }
             })
             .then(response => response.text())
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
         }
 
-        function toggleUpHeater() {
-            const upperPlugStatus = document.getElementById('upperPlugStatus');
-            console.log(upperPlugStatus.textContent)
-            if (upperPlugStatus.textContent === 'Plugged') {
-                turnHeaterOff("up")
-            } else {
-                turnHeaterOn("up")
-            }
-
-            console.log(`Upper heater status: ${upperPlugStatus.textContent}`);
-        }
-
-        function toggleDownHeater() {
-            const lowerPlugStatus = document.getElementById('lowerPlugStatus');
-            if (lowerPlugStatus.textContent === 'Plugged') {
-                turnHeaterOff("down")
-
-            } else {
-                turnHeaterOn("down")
-            }
-
-            console.log(`Lower heater status: ${lowerPlugStatus.textContent}`);
-        }
-
-        function turnHeaterOn(id){
-            fetch(`api/heater/${id}/True`, {
+        function switchHeaterState(id){
+            fetch(`api/heater/${id}/switch`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             })
             .then(response => response.text())
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        }
-
-        function turnHeaterOff(id){
-            fetch(`api/heater/${id}/False`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.text())
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
         }
 
         function updateCurrentTemperature(temp) {
+            if(temp === undefined)
+                return;
+
             document.getElementById('currentTemperatureVal').textContent = temp;
         }
 
         function updateRequiredTemperature(temp) {
+            if(temp === undefined)
+                return;
+
             document.getElementById('requiredTemperatureVal').textContent = temp;
+        }
+
+        function updateHeaterStatus(heaterId, isPlugged){
+            if(isPlugged === undefined)
+                return;
+
+            const heaterStatus = document.getElementById(heaterId);
+                    if(isPlugged){
+                        heaterStatus.classList.toggle('on');
+                        heaterStatus.classList.remove('off');
+                        heaterStatus.textContent = 'On';
+                    }
+                    else{
+                        heaterStatus.classList.toggle('off');
+                        heaterStatus.classList.remove('on');
+                        heaterStatus.textContent = 'Off';
+                    }
+        }
+
+        function updateHeaterPluggingStatus(plugId, status){
+            if(status === undefined)
+                return;
+
+            const plugStatus = document.getElementById(plugId);
+            if(status){
+                plugStatus.textContent = 'Plugged';
+                plugStatus.classList.remove('unplugged');
+                plugStatus.classList.add('plugged');
+            }
+            else{
+                plugStatus.textContent = 'Unplugged';
+                plugStatus.classList.remove('plugged');
+                plugStatus.classList.add('unplugged');
+            }
         }
 
         function handleSSE() {
@@ -213,71 +204,12 @@
                 const downHeater = data.down_heater_state
                 const isDownHeaterPlugged = data.down_heater_plugged
 
-                if (curr_temp !== undefined) {
-                    updateCurrentTemperature(curr_temp);
-                }
-                
-                if (req_temp !== undefined) {
-                    updateRequiredTemperature(req_temp);
-                }
-                
-                if (upHeater !== undefined) {
-                    const upperOvenStatus = document.getElementById('upperOvenStatus');
-                    if(upHeater){
-                        upperOvenStatus.classList.toggle('on');
-                        upperOvenStatus.classList.remove('off');
-                        upperOvenStatus.textContent = 'On';
-                    }
-                    else{
-                        upperOvenStatus.classList.toggle('off');
-                        upperOvenStatus.classList.remove('on');
-                        upperOvenStatus.textContent = 'Off';
-                    }
-                }
-
-                if (downHeater !== undefined) {
-                    const lowerOvenStatus = document.getElementById('lowerOvenStatus');
-                    if(downHeater){
-                        lowerOvenStatus.classList.toggle('on');
-                        lowerOvenStatus.classList.remove('off');
-                        lowerOvenStatus.textContent = 'On';
-                    }
-                    else{
-                        lowerOvenStatus.classList.toggle('off');
-                        lowerOvenStatus.classList.remove('on');
-                        lowerOvenStatus.textContent = 'Off';
-                    }
-                }
-            
-                console.log(isUpHeaterPlugged)
-
-                if(isUpHeaterPlugged !== undefined){
-                    const plugStatus = document.getElementById('upperPlugStatus');
-                    if(isUpHeaterPlugged){
-                        plugStatus.textContent = 'Plugged';
-                        plugStatus.classList.remove('unplugged');
-                        plugStatus.classList.add('plugged');
-                    }
-                    else{
-                        plugStatus.textContent = 'Unplugged';
-                        plugStatus.classList.remove('plugged');
-                        plugStatus.classList.add('unplugged');
-                    }
-                }
-
-                if(isDownHeaterPlugged !== undefined){
-                    const plugStatus = document.getElementById('lowerPlugStatus');
-                    if(isDownHeaterPlugged){
-                        plugStatus.textContent = 'Plugged';
-                        plugStatus.classList.remove('unplugged');
-                        plugStatus.classList.add('plugged');
-                    }
-                    else{
-                        plugStatus.textContent = 'Unplugged';
-                        plugStatus.classList.remove('plugged');
-                        plugStatus.classList.add('unplugged');
-                    }
-                }
+                updateCurrentTemperature(curr_temp);
+                updateRequiredTemperature(req_temp);
+                updateHeaterStatus('upHeaterStatus',upHeater)
+                updateHeaterStatus('downHeaterStatus',downHeater)
+                updateHeaterPluggingStatus('upperPlugStatus',isUpHeaterPlugged)
+                updateHeaterPluggingStatus('lowerPlugStatus',isDownHeaterPlugged)
             };
 
             eventSource.onerror = function(error) {
