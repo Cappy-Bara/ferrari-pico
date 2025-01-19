@@ -140,9 +140,9 @@
             const upperPlugStatus = document.getElementById('upperPlugStatus');
             console.log(upperPlugStatus.textContent)
             if (upperPlugStatus.textContent === 'Plugged') {
-                turnHeaterOff("up",upperPlugStatus)
+                turnHeaterOff("up")
             } else {
-                turnHeaterOn("up",upperPlugStatus)
+                turnHeaterOn("up")
             }
 
             console.log(`Upper heater status: ${upperPlugStatus.textContent}`);
@@ -151,17 +151,16 @@
         function toggleDownHeater() {
             const lowerPlugStatus = document.getElementById('lowerPlugStatus');
             if (lowerPlugStatus.textContent === 'Plugged') {
-                turnHeaterOff("down",lowerPlugStatus)
+                turnHeaterOff("down")
 
             } else {
-                turnHeaterOn("down",lowerPlugStatus)
+                turnHeaterOn("down")
             }
 
             console.log(`Lower heater status: ${lowerPlugStatus.textContent}`);
         }
 
-        function turnHeaterOn(id, plugStatus){
-
+        function turnHeaterOn(id){
             fetch(`api/heater/${id}/True`, {
                 method: 'POST',
                 headers: {
@@ -171,17 +170,13 @@
             .then(response => response.text())
             .then(data => {
                 console.log(data);
-                plugStatus.textContent = 'Plugged';
-                plugStatus.classList.remove('unplugged');
-                plugStatus.classList.add('plugged');
             })
             .catch(error => {
                 console.error('Error:', error);
             });
         }
 
-        function turnHeaterOff(id, plugStatus){
-
+        function turnHeaterOff(id){
             fetch(`api/heater/${id}/False`, {
                 method: 'POST',
                 headers: {
@@ -191,14 +186,10 @@
             .then(response => response.text())
             .then(data => {
                 console.log(data);
-                plugStatus.textContent = 'Unplugged';
-                plugStatus.classList.remove('plugged');
-                plugStatus.classList.add('unplugged');
             })
             .catch(error => {
                 console.error('Error:', error);
             });
-
         }
 
         function updateCurrentTemperature(temp) {
@@ -218,11 +209,14 @@
                 const curr_temp = data.current_temperature
                 const req_temp = data.required_temperature
                 const upHeater = data.top_heater_state
+                const isUpHeaterPlugged = data.top_heater_plugged
                 const downHeater = data.down_heater_state
+                const isDownHeaterPlugged = data.down_heater_plugged
 
                 if (curr_temp !== undefined) {
                     updateCurrentTemperature(curr_temp);
                 }
+                
                 if (req_temp !== undefined) {
                     updateRequiredTemperature(req_temp);
                 }
@@ -252,6 +246,36 @@
                         lowerOvenStatus.classList.toggle('off');
                         lowerOvenStatus.classList.remove('on');
                         lowerOvenStatus.textContent = 'Off';
+                    }
+                }
+            
+                console.log(isUpHeaterPlugged)
+
+                if(isUpHeaterPlugged !== undefined){
+                    const plugStatus = document.getElementById('upperPlugStatus');
+                    if(isUpHeaterPlugged){
+                        plugStatus.textContent = 'Plugged';
+                        plugStatus.classList.remove('unplugged');
+                        plugStatus.classList.add('plugged');
+                    }
+                    else{
+                        plugStatus.textContent = 'Unplugged';
+                        plugStatus.classList.remove('plugged');
+                        plugStatus.classList.add('unplugged');
+                    }
+                }
+
+                if(isDownHeaterPlugged !== undefined){
+                    const plugStatus = document.getElementById('lowerPlugStatus');
+                    if(isDownHeaterPlugged){
+                        plugStatus.textContent = 'Plugged';
+                        plugStatus.classList.remove('unplugged');
+                        plugStatus.classList.add('plugged');
+                    }
+                    else{
+                        plugStatus.textContent = 'Unplugged';
+                        plugStatus.classList.remove('plugged');
+                        plugStatus.classList.add('unplugged');
                     }
                 }
             };

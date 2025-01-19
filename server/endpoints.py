@@ -20,11 +20,14 @@ async def change_temperature(request, value):
 async def ddd(request, id, state):
     message = "Heater " + id + " set to : " + state
     print(message)
-            
+    
+    parsed = True if state == "True" else False
+    print(parsed)
+
     if(id == "up"):
-        context.up_heater_plugged = state
+        context.up_heater_plugged = parsed
     elif(id == "down"):
-        context.down_heater_plugged = state
+        context.down_heater_plugged = parsed
 
     return(message)
 
@@ -33,7 +36,10 @@ async def ddd(request, id, state):
 async def events(request, sse):
     while(True):
         await asyncio.sleep(1)
-        await sse.send(json.dumps(currentState.__dict__))
+        result = currentState.__dict__.copy()
+        result['top_heater_plugged'] = context.up_heater_plugged 
+        result['down_heater_plugged'] = context.down_heater_plugged 
+        await sse.send(json.dumps(result))
 
 def get_endpoints(appContext : AppContext, state : StateResult):
     global context, currentState
