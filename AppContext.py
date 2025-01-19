@@ -5,3 +5,4 @@ class AppContext:
         self.required_temperature = req_temp
         self.up_heater_plug = Plug(up_heater)
         self.down_heater_plug = Plug(down_heater)
+        self.ip = ""

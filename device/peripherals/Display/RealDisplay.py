@@ -1,14 +1,16 @@
 from libs.SSD1306.ssd1306 import SSD1306_I2C
 from peripherals.Display.Display import Display
 from states.StateMachine import StateResult
+from machine import I2C, Pin
 
 class RealDisplay(Display):
 
-    def __init__(self, display_i2c, width, height):
+    def __init__(self, scl, sda, width, height):
+        display_i2c = I2C(0, scl = Pin(scl), sda = Pin(sda), freq=200000)
         self._display = SSD1306_I2C(width, height, display_i2c)
         self._ping = False
 
-    def display_state(self, state : StateResult):
+    def display_state(self, state : StateResult, ip : str):
 
         formatted_curr_temp = "{:.1f}".format(state.current_temperature)
         formatted_req_temp = "{:.1f}".format(state.required_temperature)
@@ -18,7 +20,7 @@ class RealDisplay(Display):
 
         self._display.text(f'T:{formatted_curr_temp}->{formatted_req_temp}',0,0)
         self._display.text(f'UP:{top_working}  DOWN:{bottom_working}',0,12)
-        self._display.text(f'127.0.0.5:2137',0,24)
+        self._display.text(ip,0,24)
 
         if(self._ping):
             self._display.text('*',120,0)
