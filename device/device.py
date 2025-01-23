@@ -15,9 +15,8 @@ async def handle_device(appContext:AppContext, beginState : StateResult):
     currentState = beginState
 
     display = get_real_display()
-    actuators = get_mocked_actuators(appContext.up_heater_plug, appContext.down_heater_plug)
-    sensors = get_mocked_sensors()
-    sensors.temperature_reader = VirtualTemperatureSensor(50,1,actuators.up_heater)
+    actuators = get_real_actuators(appContext.up_heater_plug, appContext.down_heater_plug)
+    sensors = get_real_sensors()
 
     HYSTERESIS = 20
 

@@ -14,8 +14,8 @@ class RealHeater(Heater):
             return self.stop_heating()
 
         self.is_working = True
-        self._pin.on()
+        self._pin.off()
 
     def stop_heating(self):
         self.is_working= False
-        self._pin.off()
+        self._pin.on()

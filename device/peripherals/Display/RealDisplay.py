@@ -1,6 +1,6 @@
+from device.peripherals.Display.Display import Display
+from device.states.StateMachine import StateResult
 from libs.SSD1306.ssd1306 import SSD1306_I2C
-from peripherals.Display.Display import Display
-from states.StateMachine import StateResult
 from machine import I2C, Pin
 
 class RealDisplay(Display):
